@@ -1,14 +1,12 @@
 import os
 import torch
-import imageio
 import argparse
 import numpy as np
-from glob import glob
 from tqdm import tqdm
 import tensorflow as tf2
 import tensorflow.compat.v1 as tf
-from os.path import join, exists
-from fusion_util import extract_openseg_img_feature, PointCloudToImageMapper, read_bytes
+from os.path import join
+from fusion_util import extract_openseg_img_feature, PointCloudToImageMapper
 
 
 def get_args():

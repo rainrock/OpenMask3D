@@ -39,11 +39,11 @@ def adjust_intrinsic(intrinsic, intrinsic_image_dim, image_dim):
     return intrinsic
 
 
-def extract_openseg_img_feature(openseg_model, bytes, text_emb, img_size=None, regional_pool=True):
+def extract_openseg_img_feature(img_dir, openseg_model, text_emb, img_size=None, regional_pool=True):
     '''Extract per-pixel OpenSeg features.'''
 
     # load RGB image
-    np_image_string = bytes
+    np_image_string = read_bytes(img_dir)
     # run OpenSeg
     results = openseg_model.signatures['serving_default'](
             inp_image_bytes=tf.convert_to_tensor(np_image_string),
@@ -93,7 +93,7 @@ def save_fused_feature(feat_bank, point_ids, n_points, out_dir, scene_id, args):
 class PointCloudToImageMapper(object):
     def __init__(self, image_dim,
             visibility_threshold=0.25, cut_bound=0, intrinsics=None):
-
+        
         self.image_dim = image_dim
         self.vis_thres = visibility_threshold
         self.cut_bound = cut_bound

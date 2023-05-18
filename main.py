@@ -1,10 +1,39 @@
 import argparse
+import subprocess
 
 def main(args):
     # Your code logic goes here
     print(f"Input file: {args.input}")
     if args.verbose:
         print("Verbose mode enabled")
+
+    # Call Adams thingy here
+    # TODO @Adam
+    p0 = subprocess.Popen([["echo", "Hello World!"]])
+
+    # Do preprocessing
+    p1 = subprocess.Popen(["python3", "preprocess/preprocess_3d_replica.py"])
+    p2 = subprocess.Popen(["python3", "preprocess/preprocess_2d_replica.py"])
+
+    exit_codes = [p.wait() for p in [p1, p2]]
+
+    # Get Clip features
+    p3 = subprocess.Popen(["python3", "clip_features/replica_openseg.py"])
+
+    exit_codes = [p.wait() for p in [p0, p3]]
+
+    # Compute clip feature per instance prediction
+
+    # TODO @Ke
+
+    query = "" # get the query somehow
+    # Compute the feature for the query
+
+    p4 = subprocess.Popen(["python3", "clip_features/clip_text_encoder.py", "--input", "{}".format(query)])
+
+    # output
+
+    # TODO @Ying
 
 if __name__ == "__main__":
     # Create the argument parser
