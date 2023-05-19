@@ -8,6 +8,11 @@ References:
 2. https://jonasschult.github.io/Mask3D/
 3. https://github.com/openai/CLIP
 
+Public Dataset:
+1. Openscene Dataset: https://cvg-data.inf.ethz.ch/openscene/data/
+2. Replica
+
+
 # Installation 
 For Preprocessing, Feature fusion and Clip text-encoding you only need to get
     torch
@@ -21,6 +26,24 @@ Then, you can place your data in data/Replica/.
 
 Moreover, you need an OpenSeg Model. Just download it from [here](https://drive.google.com/file/d/1DgyH-1124Mo8p6IUJ-ikAiwVZDDfteak/view?usp=sharing)
 and put it inside the folder openseg.
+
+# Combine OpenScene Clip feature with Mask3D heatmap
+
+Definition
+   
+   Given Clip feature space $V$ and instance class $`X`$ , $|X| = 200$(?)
+   
+   Input: 
+   
+   Given 3D Scan point cloud space $P$, for each point $p \in P$ we have
+        
+   - 3D Clip feature, a mapping $\phi$ ($P \to V$) for each point to Clip feature space $V$.
+        
+   - Mask3D heatmap, a mapping for each point to probability space over instance class $X$ , $\sum_{x \in X}Pr(p \in x) = 1$ 
+   
+   Output: 
+        $\forall p \in P$, compute $\sum_{x \in X} Pr(p \in x) \phi(x)$
+  
 
 # Visualization [Open3D]
 
