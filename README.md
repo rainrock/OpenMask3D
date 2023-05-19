@@ -39,7 +39,8 @@ Definition
         
    - 3D Clip feature, a mapping $\phi$ ($P \to V$) for each point to Clip feature space $V$.
         
-   - Mask3D heatmap, a mapping for each point to probability space over instance class $X$ , $\sum_{x \in X}Pr(p \in x) = 1$ 
+   [//]:- Mask3D heatmap, a mapping for each point to probability space over instance class $X$ , $\sum_{x \in X}Pr(p \in x) = 1$ 
+   - $N$ heatmaps from $[0,1]^{|P|}$, $N$ mappings that describe for each point the confidence of belonging to this prediction
    
    Output: 
         $\forall p \in P$, compute $\sum_{x \in X} Pr(p \in x) \phi(x)$
