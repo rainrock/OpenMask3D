@@ -112,7 +112,7 @@ class AppWindow:
         print()
         print("input:", new_text)
         print("===> Call Function to change the color of Point-Cloud")
-        self.load("replica_room0.ply")
+        self.load_cloud("replica_room0.ply")
         print()
 
     def _on_menu_open(self):
@@ -151,7 +151,7 @@ class AppWindow:
 
     def _on_load_dialog_done(self, filename):
         self.window.close_dialog()
-        self.load(filename)
+        self.load_cloud(filename)
 
     def _on_menu_export(self):
         dlg = gui.FileDialog(gui.FileDialog.SAVE, "Choose file to save",
@@ -214,7 +214,36 @@ class AppWindow:
             except Exception as e:
                 print(e)
 
-    
+    def load_cloud(self, path):
+        self._scene.scene.clear_geometry()
+
+        geometry = None
+        cloud = None
+        
+        try:
+            cloud = o3d.io.read_point_cloud(path)
+            self.pcd = cloud
+        except Exception as e:
+            pass
+        
+        if cloud is not None:
+            print("[Info] Successfully read", path)
+            if not cloud.has_normals():
+                cloud.estimate_normals()
+            cloud.normalize_normals()
+            geometry = cloud
+        else:
+            print("[WARNING] Failed to read points", path)
+
+        if geometry is not None :
+            try:
+                self._scene.scene.add_geometry("__model__", geometry,
+                                                   self.settings.material)
+                bounds = self._scene.scene.bounding_box
+                self._scene.setup_camera(60, bounds, bounds.get_center())
+            except Exception as e:
+                print(e)
+
     # download the image to local 
     def export_image(self, path, width, height):
 
@@ -237,7 +266,7 @@ def main():
     if len(sys.argv) > 1:
         path = sys.argv[1]
         if os.path.exists(path):
-            w.load(path)
+            w.load_cloud(path)
         else:
             w.window.show_message_box("Error",
                                       "Could not open file '" + path + "'")
@@ -246,6 +275,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # # web visualiser, can not take keyboard input
-    # o3d.visualization.webrtc_server.enable_webrtc()
     main()
