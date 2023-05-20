@@ -4,7 +4,7 @@ import open3d.visualization.gui as gui
 import open3d.visualization.rendering as rendering
 import os
 import sys
-from  clip_utils import find_mask
+from  clip_utils import find_mask, generate_color_map
 
 class Settings:
     UNLIT = "defaultUnlit"
@@ -221,7 +221,8 @@ class AppWindow:
         color = np.asarray(self.pcd.colors)
         
         # @Ying change the new_color according to the mask 
-        new_color = np.full_like(color, 0.8)
+        mask = np.random.random(color.shape[0]) # dummy mask:  value from 0 to 1
+        new_color = generate_color_map(mask)
 
         assert(new_color.shape==color.shape)
         self.pcd.colors = o3d.utility.Vector3dVector(new_color)
