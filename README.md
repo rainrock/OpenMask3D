@@ -52,29 +52,26 @@ Definition
 We implement a visualization tool that leverages Open3D to visualize point clouds and process input text queries. This README provides instructions on how to use our visualizer and outlines the functionalities that are yet to be implemented @Jan @Ke
 
 
-To experience our visualizer, follow these instructions:
+To experience our visualizer, run the following script. 
 
-1. Navigate to the visualization directory.
-    ```
-    cd visualization
-    ```
+Choose a `.ply` file from the menu bar after running the visualizer.
 
-2. Run the `visualize.py` script and specify a point cloud file (e.g., `fragment.ply`) to visualize it.
-    ```
-    python visualize.py fragment.ply
-    ```
-    Alternatively, you can always choose a file from the menu bar after running the visualizer.
-    ```
-    python visualize.py
-    ```
+    python visualization/visualize.py
+    
+
+Alternatively, specify the path to a point cloud file (e.g., fragment.ply) as an argment.
+ 
+    python visualization/visualize.py visualization/fragment.ply
+    
 
 ### Functionalities
 
 There are several functionalities that are yet to be implemented. These functions are assigned to specific team members:
+`@Jan and @Ke` 
 
-Functions to be Implemented by `@Jan and @Ke`
+See `visualization/clip_utils.py` the dummy example functions.
 
-`Input`: "text"   (e.g, "sofa")
+`Input`:  "text"   (e.g, "sofa")
 
 `OutPut`: PointCloud Mask ($|P|$ values from 0 to 1 indicate how relevant the points are to the given text). (e.g.[0.1, 0.3, 0, 0,...1] of size $|P|$)
 
