@@ -118,12 +118,13 @@ class AppWindow:
         print()
         print("input:", new_text)
         print("===> Call Function to change the color of Point-Cloud <===")
-        self.load_cloud("replica_room0.ply")
+        # self.load_cloud("replica_room0.ply")
         print()
         
         # reload the colors of points so the relavant points have distinctive color
         mask = find_mask(input, self.pcd_name)
-        # uodate_color(mask, )
+        self.update_color(mask)
+        self.update_scene()
         
 
     def _on_menu_open(self):
@@ -215,6 +216,20 @@ class AppWindow:
                 self._scene.setup_camera(60, bounds, bounds.get_center())
             except Exception as e:
                 print(e)
+
+    def update_color(self, mask):
+        color = np.asarray(self.pcd.colors)
+        
+        # @Ying change the new_color according to the mask 
+        new_color = np.full_like(color, 0.8)
+
+        assert(new_color.shape==color.shape)
+        self.pcd.colors = o3d.utility.Vector3dVector(new_color)
+
+    def update_scene(self):
+        self._scene.scene.clear_geometry()
+        self._scene.scene.add_geometry("__model__", self.pcd,
+                                                   self.settings.material)
 
     # download the image to local 
     def export_image(self, path, width, height):
