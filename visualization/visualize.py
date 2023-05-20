@@ -4,6 +4,7 @@ import open3d.visualization.gui as gui
 import open3d.visualization.rendering as rendering
 import os
 import sys
+from  clip_utils import find_mask
 
 class Settings:
     UNLIT = "defaultUnlit"
@@ -40,6 +41,8 @@ class AppWindow:
 
     def __init__(self, width, height):
         self.pcd = None
+        self.pcd_name = None
+
         self.settings = Settings()
 
         self.window = gui.Application.instance.create_window(
@@ -109,11 +112,19 @@ class AppWindow:
         print(new_text)
 
     def _on_value_changed(self, new_text):
+        if self.pcd_name is None:
+            print("Please choose a .ply point cloud file")
+        
         print()
         print("input:", new_text)
-        print("===> Call Function to change the color of Point-Cloud")
+        print("===> Call Function to change the color of Point-Cloud <===")
         self.load_cloud("replica_room0.ply")
         print()
+        
+        # reload the colors of points so the relavant points have distinctive color
+        mask = find_mask(input, self.pcd_name)
+        # uodate_color(mask, )
+        
 
     def _on_menu_open(self):
         dlg = gui.FileDialog(gui.FileDialog.OPEN, "Choose file to load",
@@ -174,46 +185,6 @@ class AppWindow:
         gui.Application.instance.menubar.set_checked(
             AppWindow.MENU_SHOW_SETTINGS, self._settings_panel.visible)
 
-    def load(self, path):
-        self._scene.scene.clear_geometry()
-
-        geometry = None
-        geometry_type = o3d.io.read_file_geometry_type(path)
-
-        mesh = None
-        if geometry_type & o3d.io.CONTAINS_TRIANGLES:
-            mesh = o3d.io.read_triangle_model(path)
-        if mesh is None:
-            print("[Info]", path, "appears to be a point cloud")
-            cloud = None
-            try:
-                cloud = o3d.io.read_point_cloud(path)
-                self.pcd = cloud
-            except Exception:
-                pass
-            if cloud is not None:
-                print("[Info] Successfully read", path)
-                if not cloud.has_normals():
-                    cloud.estimate_normals()
-                cloud.normalize_normals()
-                geometry = cloud
-            else:
-                print("[WARNING] Failed to read points", path)
-
-        if geometry is not None or mesh is not None:
-            try:
-                if mesh is not None:
-                    # Triangle model
-                    self._scene.scene.add_model("__model__", mesh)
-                else:
-                    # Point cloud
-                    self._scene.scene.add_geometry("__model__", geometry,
-                                                   self.settings.material)
-                bounds = self._scene.scene.bounding_box
-                self._scene.setup_camera(60, bounds, bounds.get_center())
-            except Exception as e:
-                print(e)
-
     def load_cloud(self, path):
         self._scene.scene.clear_geometry()
 
@@ -223,6 +194,7 @@ class AppWindow:
         try:
             cloud = o3d.io.read_point_cloud(path)
             self.pcd = cloud
+            self.pcd_name = path
         except Exception as e:
             pass
         
