@@ -31,7 +31,7 @@ and put it inside the folder openseg.
 
 Definition
    
-   Given Clip feature space $V$ and instance class $`X`$ , $|X| = 200$(?)
+   Given Clip feature space $V$ and instance class space $`X`$ , $|X| = 200$(?)
    
    Input: 
    
