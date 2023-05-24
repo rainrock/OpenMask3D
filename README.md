@@ -35,16 +35,20 @@ Definition
    
    Input: 
    
-   Given 3D Scan point cloud space $P$, for each point $p \in P$ we have
+   Given 3D Scan point cloud set $P \subset R^3$, for each point $p \in P$ we have
         
    - 3D Clip feature, a mapping $\phi$ ($P \to V$) for each point to Clip feature space $V$.
    <!---     
    - Mask3D heatmap, a mapping for each point to probability space over instance class $X$ , $\sum_{x \in X}Pr(p \in x) = 1$
    -->
-   - $N$ heatmaps from $[0,1]^{|P|}$, $N$ mappings that describe for each point the confidence of belonging to this prediction
+   - Heatmaps $h_i$ from $P \to [0,1]^{|P|}$, where $0 \leq i < |X|$, $h_i$ is a mapping from each point $p$ to the confidence level of this point belonging to instance class $x \in X$.
    
-   Output: 
-        $\forall p \in P$, compute $\sum_{x \in X} Pr(p \in x) \phi(x)$
+   Processing:
+   - $ Softmax(h_i) $
+   
+   Output:
+   
+   - for each instance class $x \in X$, compute the aggregated clip feature over all points.
   
 
 # Visualization [Open3D]
