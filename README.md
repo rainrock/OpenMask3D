@@ -10,7 +10,7 @@ References:
 
 Public Dataset:
 1. Openscene Dataset: https://cvg-data.inf.ethz.ch/openscene/data/
-2. Replica
+2. Replica:
 
 
 # Installation 
@@ -27,7 +27,7 @@ Then, you can place your data in data/Replica/.
 Moreover, you need an OpenSeg Model. Just download it from [here](https://drive.google.com/file/d/1DgyH-1124Mo8p6IUJ-ikAiwVZDDfteak/view?usp=sharing)
 and put it inside the folder openseg.
 
-# Combine OpenScene Clip feature with Mask3D heatmap
+# Feature fusion  (OpenScene and Mask3D)
 
 Definition
    
@@ -37,18 +37,18 @@ Definition
    
    Given 3D Scan point cloud set $P \subset R^3$, for each point $p \in P$ we have
         
-   - 3D Clip feature, a mapping $\phi$ ($P \to V$) for each point to Clip feature space $V$.
+   - [OpenScene] 3D clip feature, a mapping $\phi$ ($P \to V$) for each point to Clip feature space $V$.
    <!---     
    - Mask3D heatmap, a mapping for each point to probability space over instance class $X$ , $\sum_{x \in X}Pr(p \in x) = 1$
    -->
-   - Heatmaps $h_i$ from $P \to [0,1]^{|P|}$, where $0 \leq i < |X|$, $h_i$ is a mapping from each point $p$ to the confidence level of this point belonging to instance class $x \in X$.
+   - [Mask3D] Heatmaps $h_i$ from $P \to [0.5, 1]^{|P|}$, where $0 \leq i < |X|$, $h_i$ is a mapping from each point $p$ to the confidence level of this point belonging to instance class $x \in X$.
    
-   Processing:
-   - $ Softmax(h_i) $
+   Normalization:
+   - $g_i = softmax(h_i - 0.5) : P \to [0, 1]^{|P|}$, where $i$ stands for the $i$-th instance class in $X$.
    
    Output:
    
-   - for each instance class $x \in X$, compute the aggregated clip feature over all points.
+   - for each instance class $x \in X$, compute the aggregated clip feature over all points: $\sum_{p \in P} \phi (p) g_i(p)$
   
 
 # Visualization [Open3D]
