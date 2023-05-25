@@ -1,153 +1,62 @@
-import os
 import torch
-import argparse
+
 import numpy as np
-from tqdm import tqdm
-import tensorflow as tf2
-import tensorflow.compat.v1 as tf
-from os.path import join
-from fusion_util import extract_openseg_img_feature, PointCloudToImageMapper
+
+from voxelizer import Voxelizer
+
+from MinkowskiEngine import SparseTensor
+
+SCALE_AUGMENTATION_BOUND = (0.9, 1.1)
+ROTATION_AUGMENTATION_BOUND = ((-np.pi / 64, np.pi / 64), (-np.pi / 64, np.pi / 64), (-np.pi,
+                                                                                      np.pi))
+TRANSLATION_AUGMENTATION_RATIO_BOUND = ((-0.2, 0.2), (-0.2, 0.2), (0, 0))
+ELASTIC_DISTORT_PARAMS = ((0.2, 0.4), (0.8, 1.6))
+
+ROTATION_AXIS = 'z'
+LOCFEAT_IDX = 2
+
+voxel_size=0.05
+
+model_path = ""
+
+# get model paint
+model = None
+
+checkpoint = torch.load(model_path, map_location=lambda storage, loc: storage.cuda())
+try:
+    model.load_state_dict(checkpoint['state_dict'], strict=True)
+
+fn = ''
+out_path = ''
+
+locs_in, feats_in, labels_in = torch.load(fn)
+labels_in[labels_in == -100] = 255
+labels_in = labels_in.astype(np.uint8)
+if np.isscalar(feats_in) and feats_in == 0:
+    # no color in the input point cloud, e.g nuscenes lidar
+    feats_in = np.zeros_like(locs_in)
+else:
+    feats_in = (feats_in + 1.) * 127.5
+
+vox = Voxelizer(
+            voxel_size=voxel_size,
+            clip_bound=None,
+            use_augmentation=True,
+            scale_augmentation_bound=SCALE_AUGMENTATION_BOUND,
+            rotation_augmentation_bound=ROTATION_AUGMENTATION_BOUND,
+            translation_augmentation_ratio_bound=TRANSLATION_AUGMENTATION_RATIO_BOUND)
+
+locs, feats, labels, inds_reconstruct, vox_ind = vox.voxelize(
+                locs_in, feats_in, labels_in, return_ind=True)
+
+coords = torch.from_numpy(locs).int()
+feats = torch.from_numpy(feats).float() / 127.5 - 1.
+inds_reverse = torch.from_numpy(inds_reconstruct).long()
 
 
-def get_args():
-    '''Command line arguments.'''
+sinput = SparseTensor(feats, coords)
 
-    parser = argparse.ArgumentParser(
-        description='Multi-view feature fusion of OpenSeg on Replica.')
-    parser.add_argument('--data_dir', type=str, help='Where is the base logging directory')
-    parser.add_argument('--output_dir', type=str, help='Where is the base logging directory')
-    parser.add_argument('--openseg_model', type=str, default='', help='Where is the exported OpenSeg model')
-    parser.add_argument('--img_feat_dir', type=str, default='', help='the id range to process')
-
-    # Hyper parameters
-    parser.add_argument('--hparams', default=[], nargs="+")
-    args = parser.parse_args()
-    return args
-
-# this is the main function that needs to be called
-def process_one_scene(data, args):
-    '''Process one scene.'''
-
-    # short hand
-    feat_dim = args.feat_dim
-    point2img_mapper = args.point2img_mapper
-    depth_scale = args.depth_scale
-    openseg_model = args.openseg_model
-    text_emb = args.text_emb
-    keep_features_in_memory = args.keep_features_in_memory
-
-    # load 3D data
-    locs_in = data["3D"]
-    n_points = locs_in.shape[0]
-
-    # short hand for processing 2D features
-    imgs = data["2D"]
-    num_img = len(imgs)
-    device = torch.device('cpu')
-
-    # extract image features and keep them in the memory
-    # default: False (extract image on the fly)
-    if keep_features_in_memory and openseg_model is not None:
-        img_features = []
-        for img in tqdm(imgs):
-            img_features.append(extract_openseg_img_feature(openseg_model, img["bytes"], text_emb))
-
-    n_points_cur = n_points
-    counter = torch.zeros((n_points_cur, 1), device=device)
-    sum_features = torch.zeros((n_points_cur, feat_dim), device=device)
-
-    ################ Feature Fusion ###################
-    vis_id = torch.zeros((n_points_cur, num_img), dtype=int, device=device)
-    for img_id, img in enumerate(tqdm(imgs)):
-        # load pose
-        pose = img["pose"]
-
-        # load depth and convert to meter
-        depth = img["depth"] / depth_scale
-
-        # calculate the 3d-2d mapping based on the depth
-        mapping = np.ones([n_points, 4], dtype=int)
-        mapping[:, 1:4] = point2img_mapper.compute_mapping(pose, locs_in, depth)
-        if mapping[:, 3].sum() == 0: # no points corresponds to this image, skip
-            continue
-
-        # calculate the 3d-2d mapping based on the depth
-        mapping = torch.from_numpy(mapping).to(device)
-        mask = mapping[:, 3]
-        vis_id[:, img_id] = mask
-        if keep_features_in_memory:
-            feat_2d = img_features[img_id].to(device)
-        else:
-            feat_2d = extract_openseg_img_feature(openseg_model, img["bytes"], text_emb).to(device)
-
-        feat_2d_3d = feat_2d[:, mapping[:, 1], mapping[:, 2]].permute(1, 0)
-
-        counter[mask!=0]+= 1
-        sum_features[mask!=0] += feat_2d_3d[mask!=0]
-
-    counter[counter==0] = 1e-5
-    feat_bank = sum_features/counter
-    point_ids = torch.unique(vis_id.nonzero(as_tuple=False)[:, 0])
-
-    return feat_bank, point_ids, n_points
-
-def test_call(args):
-    seed = 1457
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    np.random.seed(seed)
-
-    ##### Dataset specific parameters #####
-    img_dim = (640, 360)
-    depth_scale = 6553.5
-
-    scenes = ['room0', 'room1', 'room2', 'office0',
-              'office1', 'office2', 'office3', 'office4']
-    #######################################
-    visibility_threshold = 0.25 # threshold for the visibility check
-
-    args.depth_scale = depth_scale
-    args.cut_num_pixel_boundary = 10 # do not use the features on the image boundary
-    args.keep_features_in_memory = False # keep image features in the memory, very expensive
-    args.feat_dim = 768 # CLIP feature dimension
-
-    data_dir = args.data_dir
-
-    data_root = join(data_dir, 'replica_3d')
-    data_root_2d = join(data_dir,'replica_2d')
-    args.data_root_2d = data_root_2d
-
-    args.n_split_points = 2000000
-
-    # load the openseg model
-    saved_model_path = args.openseg_model
-    args.text_emb = None
-    if args.openseg_model != '':
-        args.openseg_model = tf2.saved_model.load(saved_model_path,
-                    tags=[tf.saved_model.tag_constants.SERVING],)
-        args.text_emb = tf.zeros([1, 1, args.feat_dim])
-    else:
-        args.openseg_model = None
-
-    # load intrinsic parameter
-    intrinsics=np.loadtxt(os.path.join(args.data_root_2d, 'intrinsics.txt'))
-
-    # calculate image pixel-3D points correspondances
-    args.point2img_mapper = PointCloudToImageMapper(
-            image_dim=img_dim, intrinsics=intrinsics,
-            visibility_threshold=visibility_threshold,
-            cut_bound=args.cut_num_pixel_boundary)
-
-    for scene in scenes:
-        data_path=os.path.join(data_root, f'{scene}.pth')
-        # load 3d data somehow and put in correct format
-        points = torch.Tensor([])
-        # load 2D data somehow and put in correct format
-        img_data = {"bytes": None, "depth": None, "pose": None }
-        data = {"2D":[img_data] , "3D": points }
-        process_one_scene(data_path, data, args)
-
-
-if __name__ == "__main__":
-    args = get_args()
-    test_call(args)
+predictions = model(sinput)
+predictions = predictions[inds_reverse, :]
+pred = predictions.half() @ text_features.t()
+logits_pred = torch.max(pred, 1)[1].cpu()
