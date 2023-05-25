@@ -1,5 +1,6 @@
 import argparse
 import subprocess
+from fusion import feature_fusion
 
 def main(args):
     # Your code logic goes here
@@ -22,10 +23,9 @@ def main(args):
 
     exit_codes = [p.wait() for p in [p0, p3]]
 
-    # Compute clip feature per instance prediction
-
-    # TODO @Ke
-
+    # Compute clip feature per instance prediction    
+    clip_feature_per_instance = feature_fusion(p0, p3)
+    
     query = "" # get the query somehow
     # Compute the feature for the query
 
