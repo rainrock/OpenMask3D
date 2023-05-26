@@ -12,4 +12,4 @@ def compute_clip_feature(text):
     # normalize
     text_features = text_features / text_features.norm(dim=-1, keepdim=True)
 
-    text_features.detach().cpu().numpy()
+    return text_features.detach().cpu().numpy()
