@@ -1,5 +1,4 @@
-import os
-import numpy as np
+
 import clip
 
 def compute_clip_feature(text):
