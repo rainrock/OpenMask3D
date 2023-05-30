@@ -1,8 +1,8 @@
 import argparse
-import subprocess
 import os
 import numpy as np
 from fusion import feature_fusion
+import mask3d
 
 def main(args):
     # Your code logic goes here
@@ -13,7 +13,8 @@ def main(args):
 
     # Call Adams thingy here
     # TODO @Adam
-    processed_mask3d = subprocess.Popen([["python3", "mask3d.py"]])
+    #processed_mask3d = subprocess.Popen([["python3", "mask3d.py"]])
+    processed_mask3d = mask3d.read(args.mask3d_path)
 
     # # Do preprocessing
     # p1 = subprocess.Popen(["python3", "preprocess/preprocess_3d_replica.py"])
@@ -49,10 +50,13 @@ if __name__ == "__main__":
 
     # Add arguments to the parser
     parser.add_argument("clip_feature_path", help="Input file path")
+    parser.add_argument("mask3d_path", help="Input file path")
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose mode")
 
     # Parse the command-line arguments
     args = parser.parse_args()
+    
+    
 
     # Call the main function
     main(args)
