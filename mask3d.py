@@ -23,7 +23,7 @@ def read_mask3d(FILEPATH):
     index += 1
 
     while index <= LAST_FILE_NR:
-        fname = f"{FILEPATH}_heatmaps/{FILEPATH}_{index}.txt" # Update filename, this was not here before!!!
+        fname = f"{FILEPATH}_heatmaps/{FILEPATH}_{index}.txt" 
         next_instance = np.loadtxt(f"{FILEPATH}_{index}.txt")
         mask3d = np.vstack((mask3d, next_instance))
         index += 1
@@ -34,11 +34,19 @@ def read_mask3d(FILEPATH):
         
     return mask3d
 
-def preprocess_heatmap(mask3d):
+def preprocess_heatmap_softmax(mask3d):
     
     normalized_mask3d = softmax(mask3d - 0.5, axis=0)
     
     return normalized_mask3d
+
+
+def preprocess_heatmap_average(mask3d):
+    mask3d -= 0.5
+    normalized_mask3d = mask3d / mask3d.sum(axis = 0)
+    
+    return normalized_mask3d
+    
     
 
 def main():
@@ -50,7 +58,7 @@ def main():
     # args = parser.parse_args()
     
     unprocessed_heatmap = read_mask3d(FILEPATH=FILEPATH)
-    preprocessed_heatmap = preprocess_heatmap(unprocessed_heatmap)
+    preprocessed_heatmap = preprocess_heatmap_average(unprocessed_heatmap)
 
     print(unprocessed_heatmap.shape)
         
