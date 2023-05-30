@@ -39,6 +39,13 @@ def find_mask(text_input, processed_mask3d, filename):
     # mapping method could be changed
     mask = np.asarray([processed_mask3d[i]* normalized_dist[i] for i in range(len(normalized_dist))])
     
+    # Thresholding, remove mask with little relevance
+    Threshold = 0.05
+    
+    mask = mask[mask.max(axis = 1)> Threshold]
+    
+    print("vis mask: ", mask.shape)
+    
     print("Successfully compute the visualization mask for 3D point cloud!")
     
     np.savetxt(f"test_data/vis_mask_{filename}.txt", mask)
