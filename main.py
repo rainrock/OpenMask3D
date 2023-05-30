@@ -1,5 +1,4 @@
 import argparse
-import os
 import numpy as np
 import torch
 from fusion import feature_fusion
@@ -8,7 +7,7 @@ import mask3d
 def main(args):
     # Your code logic goes here
     print(f"Input file: {args.clip_feature_path}")
-    print(f"Input file: {args.mask3d_path}")
+    print(f"Input dir: {args.mask3d_path}")
     print(f"Scene: {args.scene_name}")
 
     
@@ -16,12 +15,9 @@ def main(args):
         print("Verbose mode enabled")
 
 
-    filename = os.path.basename(args.clip_feature_path)
-
     # Call Adams thingy here
     # TODO @Adam
     #processed_mask3d = subprocess.Popen([["python3", "mask3d.py"]])
-    print(args.mask3d_path + args.scene_name)
     processed_mask3d = mask3d.read(args.mask3d_path + args.scene_name)
 
     # # Do preprocessing
@@ -48,7 +44,7 @@ def main(args):
     processed_mask3d = np.reshape(processed_mask3d, [200, -1])
 
     # compute clip feature per instance
-    clip_feature_per_instance = feature_fusion(processed_mask3d, point_cloud_clip_feature, filename)
+    clip_feature_per_instance = feature_fusion(processed_mask3d, point_cloud_clip_feature, args.scene_name)
     
     query = "" # get the query somehow
     # Compute the feature for the query
