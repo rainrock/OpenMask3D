@@ -23,9 +23,12 @@ def read_mask3d(FILEPATH):
     index += 1
 
     while index <= LAST_FILE_NR:
-        next_instance = np.loadtxt(fname)
+        fname = f"{FILEPATH}_heatmaps/{FILEPATH}_{index}.txt" # Update filename, this was not here before!!!
+        next_instance = np.loadtxt(f"{FILEPATH}_{index}.txt")
         mask3d = np.vstack((mask3d, next_instance))
         index += 1
+        fname = f"{FILEPATH}_{index}.txt"
+
         
     print("Successfully read precomputed heatmaps!")
         
@@ -46,8 +49,11 @@ def main():
     # # Parse the command-line arguments
     # args = parser.parse_args()
     
-    preprocessed_heatmap = preprocess_heatmap(read_mask3d())
-    
+    unprocessed_heatmap = read_mask3d(FILEPATH=FILEPATH)
+    preprocessed_heatmap = preprocess_heatmap(unprocessed_heatmap)
+
+    print(unprocessed_heatmap.shape)
+        
     filename = os.path.basename(FILEPATH)
     np.savetxt(f"test_data/processed_{filename}_heatmap.txt", preprocessed_heatmap)
     
