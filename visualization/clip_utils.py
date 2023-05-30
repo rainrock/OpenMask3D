@@ -1,7 +1,9 @@
 import numpy as np
+import os
 import matplotlib.pyplot as plt
 from scipy.special import softmax
 from clip_features.clip_text_encoder import compute_clip_distance, compute_clip_feature
+from mask3d import FILEPATH
 
 # by Jan & Ke
 # compute clip feature vector from a text input
@@ -14,19 +16,28 @@ def compute_textCLIP(text_input):
 # mask3D: Size_Instances * Size_3D_Points   
 # Output
 # mask: Size_Instances * Size_3D_Points
-def find_mask(text_input, file_instance_feature, file_mask3D):
+def find_mask(text_input):
     #  find features corresponding to the file_name
     #name = file_name.split("/")[-1].replace('.ply', "")
     #print("this function will read the the CLIP features of pcd from: ", name)
-    instance_feature = np.loadtxt(file_instance_feature)
-    mask3D = np.loadtxt(file_mask3D)
-    normalized_mask3D = softmax(mask3D - 0.5, axis=0)
+    
+    filename = os.path.basename(FILEPATH)
+    
+    print(f"Reading fused instance feature from test_data/fused_feature_{filename}.txt")  
+    instance_feature = np.loadtxt(f"test_data/fused_feature_{filename}.txt")
+    
+    print(f"Reading preprocessed heatmap from test_data/processed_{filename}_heatmap.txt")  
+    mask3D = np.loadtxt(f"test_data/processed_{filename}_heatmap.txt")
+    
+    #normalized_mask3D = softmax(mask3D - 0.5, axis=0)
 
     text_CLIP = compute_textCLIP(text_input)
 
     # for all features, find the distance between text_CLIP    
     normalized_dist = np.asarray([compute_clip_distance(feature, text_CLIP) for feature in instance_feature])
     
+    # map the clip distance back to the heatmap mask, 
+    # mapping method could be changed
     mask = np.asarray([mask3D[i]* normalized_dist[i] for i in range(len(normalized_dist))])
     
     return mask

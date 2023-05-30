@@ -1,30 +1,36 @@
 import numpy as np
 from scipy.special import softmax
 import warnings
-
+from mask3d import FILEPATH
+import os
 
 # Input dimension
 # mask3D: Size_Instances * Size_3D_Points   
 # clip_feature: Size_3D_Points * Size_Clip_Feature_Vector
 # instance_feature: Size_Instances * Size_Clip_Feature_Vector
-def feature_fusion(mask3d, clip_feature, method = "average"):
+def feature_fusion(preproessed_mask3d, clip_feature, method = "average"):
 
     size_points = clip_feature.shape[0]
     size_feature = clip_feature.shape[1]
-    size_instance = mask3d.shape[0]
+    size_instance = preproessed_mask3d.shape[0]
     
-    if len(mask3d.shape)>1 and size_points != mask3d.shape[1]:
+    if len(preproessed_mask3d.shape)>1 and size_points != preproessed_mask3d.shape[1]:
         warnings.warn("point cloud sizes don't align.")
         return None  
 
-    normalized_mask3d = softmax(mask3d - 0.5, axis=0)
+    #normalized_mask3d = softmax(mask3d - 0.5, axis=0)
     
     if method == "average":
-        instance_feature = average(normalized_mask3d, clip_feature)
+        instance_feature = average(preproessed_mask3d, clip_feature)
     else:
         instance_feature = None
     
-    return instance_feature
+    filename = os.path.basename(FILEPATH)
+
+    np.savetxt(f"test_data/fused_feature_{filename}.txt", instance_feature) 
+    print(f"Saved fused instance feature to test_data/fused_feature_{filename}.txt")  
+    
+    #return instance_feature
 
 
 

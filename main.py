@@ -1,16 +1,19 @@
 import argparse
 import subprocess
+import os
 from fusion import feature_fusion
 
 def main(args):
     # Your code logic goes here
     print(f"Input file: {args.input}")
+    filename = os.path.basename(args.input)
+    
     if args.verbose:
         print("Verbose mode enabled")
 
     # Call Adams thingy here
     # TODO @Adam
-    p0 = subprocess.Popen([["echo", "Hello World!"]])
+    p0 = subprocess.Popen([["python3", "mask3d.py"]])
 
     # Do preprocessing
     p1 = subprocess.Popen(["python3", "preprocess/preprocess_3d_replica.py"])
