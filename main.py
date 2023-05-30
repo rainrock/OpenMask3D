@@ -39,7 +39,14 @@ def main(args):
     
     # read precomputed clip feature
     point_cloud_clip_feature = torch.load(args.clip_feature_path)['feat'].numpy()
-    
+
+    # read mask for clip_features
+    mask = torch.load(args.clip_feature_path)['mask_full'].numpy()
+    mask = np.asarray([mask] * 200)
+
+    processed_mask3d = processed_mask3d[mask]
+    processed_mask3d = np.reshape(processed_mask3d, [200, -1])
+
     # compute clip feature per instance
     clip_feature_per_instance = feature_fusion(processed_mask3d, point_cloud_clip_feature, filename)
     

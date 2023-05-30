@@ -71,18 +71,13 @@ Alternatively, specify the path to a point cloud file (e.g., fragment.ply) as an
 ### Functionalities
 
 There are several functionalities that are yet to be implemented. These functions are assigned to specific team members:
-`@Jan and @Ke` 
+@Ke` 
 
 Implement the function "`find_mask`" in `visualization/clip_utils.py`.
 
 `Input`:  "text"   (e.g, "sofa")
 
 `OutPut`: PointCloud Mask ($|P|$ values from 0 to 1 indicate how relevant the points are to the given text). (e.g.[0.1, 0.3, 0, 0,...1] of size $|P|$)
-
-
-    compute_clip_feature(text: str) -> clip_feature: This function takes a text input and computes the CLIP feature of the text.
-
-    compute_clip_distance(clip_feature1: clip_feature, clip_feature2: clip_feature) -> distance: This function computes the distance between two different CLIP feature vectors.
 
     find_similar_points(clip_vector: clip_feature, threshold: float) -> similarity mask: This function takes a CLIP vector and returns a mask value from 0 to 1. 
     large value indicates the point CLIP is close to the text CLIP. 
