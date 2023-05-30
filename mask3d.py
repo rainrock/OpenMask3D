@@ -51,7 +51,7 @@ def main():
     filename = os.path.basename(FILEPATH)
     np.savetxt(f"test_data/processed_{filename}_heatmap.txt", preprocessed_heatmap)
     
-    print(f"Save precomputed heatmap to test_data/processed_{filename}_heatmap.txt")
+    print(f"Save preprocessed heatmap to test_data/processed_{filename}_heatmap.txt")
     
     return preprocessed_heatmap
 
