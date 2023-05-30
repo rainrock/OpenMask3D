@@ -51,7 +51,7 @@ def main(args):
     # Compute the feature for the query
     
     # compute the mask for visualization
-    mask = find_mask(query, args.scene_name)
+    mask = find_mask(query, processed_mask3d, args.scene_name)
 
     #p4 = subprocess.Popen(["python3", "clip_features/clip_text_encoder.py", "--input", "{}".format(query)])
 
