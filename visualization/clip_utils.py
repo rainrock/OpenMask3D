@@ -39,6 +39,8 @@ def find_mask(text_input, filename):
     # mapping method could be changed
     mask = np.asarray([mask3D[i]* normalized_dist[i] for i in range(len(normalized_dist))])
     
+    print("Successfully compute the visualization mask for 3D point cloud!")
+    
     return mask
 
 

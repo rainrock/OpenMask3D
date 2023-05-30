@@ -3,6 +3,7 @@ import numpy as np
 import torch
 from fusion import feature_fusion
 import mask3d
+from visualization.clip_utils import find_mask
 
 def main(args):
     # Your code logic goes here
@@ -46,8 +47,11 @@ def main(args):
     # compute clip feature per instance
     clip_feature_per_instance = feature_fusion(processed_mask3d, point_cloud_clip_feature, args.scene_name)
     
-    query = "" # get the query somehow
+    query = "table" # get the query somehow
     # Compute the feature for the query
+    
+    # compute the mask for visualization
+    mask = find_mask(query, args.scene_name)
 
     #p4 = subprocess.Popen(["python3", "clip_features/clip_text_encoder.py", "--input", "{}".format(query)])
 
