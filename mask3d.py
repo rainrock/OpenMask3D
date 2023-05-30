@@ -9,7 +9,7 @@ from scipy.special import softmax
 # precomputed heatmaps are named as {scene name}_{0} to {scene name}_{201}
 # e.g. for heatmaps ../dir/scene0707_00_{0:201}, filepath should be ../dir/scene0707_00
 
-LAST_FILE_NR = 201
+LAST_FILE_NR = 199
 
 # Output dimension: Size_Instances * Size_3D_Points
 def read_mask3d(FILEPATH):
@@ -41,8 +41,12 @@ def preprocess_heatmap_softmax(mask3d):
 
 
 def preprocess_heatmap_average(mask3d):
+    epsilon = 1e-10  #precision
     mask3d -= 0.5
-    normalized_mask3d = mask3d / mask3d.sum(axis = 0)
+    
+    sum_array = mask3d.sum(axis = 0)
+    sum_array[sum_array < epsilon] = 1
+    normalized_mask3d = mask3d / sum_array
     
     return normalized_mask3d
     
