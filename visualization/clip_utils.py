@@ -43,6 +43,8 @@ def find_mask(text_input, processed_mask3d, filename):
     
     np.savetxt(f"test_data/vis_mask_{filename}.txt", mask)
     
+    print(f"Saved 3D point cloud visualization mask to test_data/vis_mask_{filename}.txt")
+    
     return mask
 
 
