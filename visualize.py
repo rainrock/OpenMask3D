@@ -285,12 +285,11 @@ def main():
     w.processed_mask3d = processed_mask3d
     w.instance_feature = instance_feature
 
-    if len(sys.argv) > 1:
-        path = sys.argv[1]
-        if os.path.exists(path):
-            w.load_cloud(path)
-        else:
-            w.window.show_message_box("Error",
+    path = '0568/0568_pc.ply'
+    if os.path.exists(path):
+        w.load_cloud(path)
+    else:
+        w.window.show_message_box("Error",
                                       "Could not open file '" + path + "'")
 
     gui.Application.instance.run()
