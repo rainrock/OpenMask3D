@@ -128,7 +128,8 @@ class AppWindow:
         print()
         
         # reload the colors of points so the relavant points have distinctive color
-        mask = clip_utils.find_mask(input, self.processed_mask3d, self.instance_feature, "")
+        mask = clip_utils.find_mask(new_text, self.processed_mask3d, self.instance_feature, "")
+        print(mask.shape)
         self.update_color(mask)
         self.update_scene()
         
@@ -227,7 +228,7 @@ class AppWindow:
         color = np.asarray(self.pcd.colors)
         
         # @Ying change the new_color according to the mask 
-        mask = np.random.random(color.shape[0]) # dummy mask:  value from 0 to 1
+        # mask = np.random.random(color.shape[0]) # dummy mask:  value from 0 to 1
         new_color = clip_utils.generate_color_map(mask)
 
         assert(new_color.shape==color.shape)
