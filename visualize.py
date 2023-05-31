@@ -226,14 +226,17 @@ class AppWindow:
                 print(e)
 
     def update_color(self, mask):
-        color = self.original_color.copy()
+        # tmp solution to solve the color issue
+        cld = o3d.io.read_point_cloud('0568/0568_pc.ply')
+        color_ = np.asarray(cld.colors)
+        # color_ = self.original_color.copy()
         
         # @Ying change the new_color according to the mask 
         # mask = np.random.random(color.shape[0]) # dummy mask:  value from 0 to 1
         # new_color = clip_utils.generate_color_map(mask)
-        new_color = clip_utils.generate_new_color(mask, color)
+        new_color = clip_utils.generate_new_color(mask, color_)
 
-        assert(new_color.shape==color.shape)
+        assert(new_color.shape==color_.shape)
         self.pcd.colors = o3d.utility.Vector3dVector(new_color)
 
     def update_scene(self):
