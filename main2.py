@@ -36,10 +36,11 @@ def main():
     
     # 
     
-    mask = clip_utils.compute_mask("table" , processed_mask3d, instance_feature, 'scene0568_00')
+    mask = clip_utils.find_mask("table" , processed_mask3d, instance_feature, 'scene0568_00')
+    mask = np.max(mask, axis=0)
+    breakpoint()
 
-    mm = np.loadtxt("test_data/vis_mask_scene0568_00.txt") # (2, 214318)
-    print(mask)
+    
 
 
 
