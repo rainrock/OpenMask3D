@@ -37,8 +37,7 @@ def main():
     # 
     
     mask = clip_utils.find_mask("table" , processed_mask3d, instance_feature, 'scene0568_00')
-    mask = np.max(mask, axis=0)
-    breakpoint()
+    print(mask.shape)
 
     
 

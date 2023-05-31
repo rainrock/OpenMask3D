@@ -15,9 +15,16 @@ def compute_textCLIP(text_input):
 
 # return: a mask of size (214318, ) shows how close each point to text clip
 def find_mask(text_input, processed_mask3d, instance_feature, filename):
+    text_CLIP = compute_textCLIP(text_input)[0]
+    normalized_dist = np.asarray([compute_clip_distance(feature, text_CLIP) for feature in instance_feature])
 
+    mask = np.asarray([processed_mask3d[i]* normalized_dist[i] for i in range(len(normalized_dist))])
 
-    return np.zeros(214318)
+    Threshold = mask.max() * 0.8
+    
+    mask = mask[mask.max(axis = 1)> Threshold]
+    mask = np.max(mask, axis=0)
+    return mask
 
 
 # Input
