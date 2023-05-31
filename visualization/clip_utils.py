@@ -18,11 +18,9 @@ def compute_textCLIP(text_input):
 # mask: Size_Instances * Size_3D_Points
 # filename: the name of a precomputed scene
 def find_mask(text_input, processed_mask3d, filename):
-    #  find features corresponding to the file_name
     #name = file_name.split("/")[-1].replace('.ply', "")
     #print("this function will read the the CLIP features of pcd from: ", name)
     
-    #filename = os.path.basename(FILEPATH)
     
     print(f"Reading fused instance feature from test_data/fused_feature_{filename}.txt")  
     instance_feature = np.loadtxt(f"test_data/fused_feature_{filename}.txt")

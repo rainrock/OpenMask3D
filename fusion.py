@@ -16,10 +16,7 @@ def feature_fusion(preproessed_mask3d, clip_feature, filename, method = "average
     if len(preproessed_mask3d.shape)>1 and size_points != preproessed_mask3d.shape[1]:
         print(f"clip feature #point:{size_points}, mask3D #points: {preproessed_mask3d.shape[1]}")
         warnings.warn("point cloud sizes don't align.")
-        return None  
 
-    #normalized_mask3d = softmax(mask3d - 0.5, axis=0)
-    
     if method == "average":
         instance_feature = average(preproessed_mask3d, clip_feature)
     else:
@@ -28,7 +25,6 @@ def feature_fusion(preproessed_mask3d, clip_feature, filename, method = "average
     np.savetxt(f"test_data/fused_feature_{filename}.txt", instance_feature) 
     print(f"Saved fused instance feature to test_data/fused_feature_{filename}.txt")  
     
-    #return instance_feature
 
 
 

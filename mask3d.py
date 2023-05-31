@@ -22,7 +22,6 @@ def read_mask3d(FILEPATH):
     index += 1
 
     while index <= LAST_FILE_NR:
-        #fname = f"{FILEPATH}_heatmaps/{FILEPATH}_{index}.txt" 
         next_instance = np.loadtxt(f"{FILEPATH}_{index}.txt")
         mask3d = np.vstack((mask3d, next_instance))
         index += 1
