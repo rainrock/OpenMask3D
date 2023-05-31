@@ -49,7 +49,16 @@ Definition
    Output:
    
    - for each instance class $x \in X$, compute the aggregated clip feature over all points: $\sum_{p \in P} \phi (p) g_i(p)$
-  
+
+
+With precomputed mask3D heatmaps and Openscene clip feature, running the following command will produce the visualization mask for 3D point cloud for certain scene:
+    
+    python3 main.py -clip_feature_path scene_clip_feature.pt -mask3d_path scene/heatmap/ -scene_name scenename
+    
+e.g. for scene 0568_00
+
+    python3 main.py -clip_feature_path scene0568_00_0.pt -mask3d_path 0568_00_mask_heatmap/heatmap/ -scene_name scene0568_00
+
 
 # Visualization [Open3D]
 
