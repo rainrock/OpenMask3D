@@ -40,7 +40,7 @@ def find_mask(text_input, processed_mask3d, filename):
     mask = np.asarray([processed_mask3d[i]* normalized_dist[i] for i in range(len(normalized_dist))])
     
     # Thresholding, remove mask with little relevance
-    Threshold = 0.05
+    Threshold = mask.max() * 0.8
     
     mask = mask[mask.max(axis = 1)> Threshold]
     
