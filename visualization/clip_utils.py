@@ -83,5 +83,19 @@ def generate_color_map(mask):
     return colors[:, :3]  # Extract only the RGB values, excluding the alpha channel
 
 
+# Given that mask (214318, ), color (214318, 3)
+# return new color (214318, 3)
+def generate_new_color(mask, color):
+    normalized_mask = (mask - np.min(mask)) / (np.max(mask) - np.min(mask))
+
+    threshold = 0.3
+
+    mask_update = normalized_mask > threshold
+    
+    highlight_color = np.array([1.0, 0.0, 0.0])
+    highlight_color2 = np.array([1.0, 1.0, 0.0])
+
+    color[mask_update] = highlight_color2
+    return color
 
     

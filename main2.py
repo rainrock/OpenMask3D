@@ -39,7 +39,12 @@ def main():
     mask = clip_utils.find_mask("table" , processed_mask3d, instance_feature, 'scene0568_00')
     print(mask.shape)
 
-    
+
+    normalized_mask = (mask - np.min(mask)) / (np.max(mask) - np.min(mask))
+
+    threshold = 0.3
+
+    mask_update = normalized_mask > threshold
 
 
 

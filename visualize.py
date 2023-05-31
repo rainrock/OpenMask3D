@@ -46,6 +46,7 @@ class AppWindow:
     def __init__(self, width, height):
         self.pcd = None
         self.pcd_name = None
+        self.original_color = None
 
         self.settings = Settings()
 
@@ -124,15 +125,16 @@ class AppWindow:
         print()
         print("input:", new_text)
         print("===> Call Function to change the color of Point-Cloud <===")
-        # self.load_cloud("replica_room0.ply")
-        print()
+        print(".... this might take a while ...")
         
         # reload the colors of points so the relavant points have distinctive color
         mask = clip_utils.find_mask(new_text, self.processed_mask3d, self.instance_feature, "")
-        print(mask.shape)
         self.update_color(mask)
         self.update_scene()
         
+        print()
+        print("===> color updated! <===")
+        print()
 
     def _on_menu_open(self):
         dlg = gui.FileDialog(gui.FileDialog.OPEN, "Choose file to load",
@@ -203,6 +205,8 @@ class AppWindow:
             cloud = o3d.io.read_point_cloud(path)
             self.pcd = cloud
             self.pcd_name = path
+            if (self.original_color is None):
+                self.original_color = np.asarray(self.pcd.colors)
         except Exception as e:
             pass
         
@@ -225,11 +229,12 @@ class AppWindow:
                 print(e)
 
     def update_color(self, mask):
-        color = np.asarray(self.pcd.colors)
+        color = self.original_color.copy()
         
         # @Ying change the new_color according to the mask 
         # mask = np.random.random(color.shape[0]) # dummy mask:  value from 0 to 1
-        new_color = clip_utils.generate_color_map(mask)
+        # new_color = clip_utils.generate_color_map(mask)
+        new_color = clip_utils.generate_new_color(mask, color)
 
         assert(new_color.shape==color.shape)
         self.pcd.colors = o3d.utility.Vector3dVector(new_color)
