@@ -1,10 +1,14 @@
 import numpy as np
+import torch
 import open3d as o3d
 import open3d.visualization.gui as gui
 import open3d.visualization.rendering as rendering
+from fusion import feature_fusion
+import visualization.clip_utils as clip_utils
+
 import os
 import sys
-from  clip_utils import find_mask, generate_color_map
+sys.path.append(".")
 
 class Settings:
     UNLIT = "defaultUnlit"
@@ -71,6 +75,8 @@ class AppWindow:
         w.add_child(self._scene)
         w.add_child(self._settings_panel)
 
+        
+
 
         if gui.Application.instance.menubar is None:
             
@@ -122,7 +128,7 @@ class AppWindow:
         print()
         
         # reload the colors of points so the relavant points have distinctive color
-        mask = find_mask(input, self.pcd_name)
+        mask = clip_utils.find_mask(input, self.processed_mask3d, self.instance_feature, "")
         self.update_color(mask)
         self.update_scene()
         
@@ -222,7 +228,7 @@ class AppWindow:
         
         # @Ying change the new_color according to the mask 
         mask = np.random.random(color.shape[0]) # dummy mask:  value from 0 to 1
-        new_color = generate_color_map(mask)
+        new_color = clip_utils.generate_color_map(mask)
 
         assert(new_color.shape==color.shape)
         self.pcd.colors = o3d.utility.Vector3dVector(new_color)
@@ -247,9 +253,37 @@ class AppWindow:
 
 
 def main():
-    gui.Application.instance.initialize()
+    ###################################################################
+    # load processed instance mask
+    processed_mask3d = np.loadtxt("0568/processed_scene0568_00_heatmap.txt") #(200, 232453) np.ndarray min 0, max 1
+    print("read instance mask, done")
 
+
+    # load per-point clip feature
+    pc_clip = torch.load('0568/scene0568_00_0.pt')
+    pc_features = pc_clip['feat'].numpy()           # (214318, 768) min:-2.1  max 2.3
+    mask_ = pc_clip['mask_full'].numpy()             # (232453,)  [True, .. False]
+    
+    mask = np.asarray([mask_] * 200)                            # (200, 232453)
+    processed_mask3d = processed_mask3d[mask] 
+    processed_mask3d = np.reshape(processed_mask3d, [200, -1]) # (200, 214318)  
+    print("read clip features, done")
+    
+
+
+    # now we have (200, 214318) "processed_mask3d" [0, 1] and (214318, 768) per point CLIP "pc_features" (-2.16, 2.37)
+
+    # per instance clip feature (200, 768)
+    feature_fusion(processed_mask3d, pc_features, "0568_00")
+    instance_feature = np.loadtxt('test_data/fused_feature_0568_00.txt') # (200, 768) [-1.1, 1.2]
+    print("compute instance CLIP features, done")
+    ###################################################################
+    
+    gui.Application.instance.initialize()
     w = AppWindow(1024, 768)
+    w.pc_features = pc_features
+    w.processed_mask3d = processed_mask3d
+    w.instance_feature = instance_feature
 
     if len(sys.argv) > 1:
         path = sys.argv[1]

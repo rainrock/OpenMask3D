@@ -10,6 +10,15 @@ from clip_features.clip_text_encoder import compute_clip_distance, compute_clip_
 def compute_textCLIP(text_input):
     return compute_clip_feature(text_input)
 
+# processed_mask3d  (200, 214318)  
+# instance_feature  (200, 768)
+
+# return: a mask of size (214318, ) shows how close each point to text clip
+def find_mask(text_input, processed_mask3d, instance_feature, filename):
+
+
+    return np.zeros(214318)
+
 
 # Input
 # clip_feature: Size_3D_Points * Size_Clip_Feature_Vector
@@ -17,7 +26,7 @@ def compute_textCLIP(text_input):
 # Output
 # mask: Size_Instances * Size_3D_Points
 # filename: the name of a precomputed scene
-def find_mask(text_input, processed_mask3d, filename):
+def find_mask_(text_input, processed_mask3d, filename):
     #name = file_name.split("/")[-1].replace('.ply', "")
     #print("this function will read the the CLIP features of pcd from: ", name)
     
