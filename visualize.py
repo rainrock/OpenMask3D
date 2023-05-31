@@ -76,9 +76,6 @@ class AppWindow:
         w.add_child(self._scene)
         w.add_child(self._settings_panel)
 
-        
-
-
         if gui.Application.instance.menubar is None:
             
             file_menu = gui.Menu()
