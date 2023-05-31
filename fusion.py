@@ -33,4 +33,6 @@ def feature_fusion(preproessed_mask3d, clip_feature, filename, method = "average
 
 
 def average(normalized_mask3d, clip_feature):
-    return np.matmul(normalized_mask3d, clip_feature)
+    aggregated_clip_feature =  np.matmul(normalized_mask3d, clip_feature)
+    sum_of_points = normalized_mask3d.sum(axis = 1).reshape(-1,1)
+    return aggregated_clip_feature/sum_of_points
