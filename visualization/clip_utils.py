@@ -20,7 +20,7 @@ def find_mask(text_input, processed_mask3d, instance_feature, filename):
 
     mask = np.asarray([processed_mask3d[i]* normalized_dist[i] for i in range(len(normalized_dist))])
 
-    Threshold = mask.max() * 0.8
+    Threshold = mask.max() * 0.5
     
     mask = mask[mask.max(axis = 1)> Threshold]
     mask = np.max(mask, axis=0)
