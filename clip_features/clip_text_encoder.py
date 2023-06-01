@@ -2,8 +2,10 @@
 import clip
 import numpy as np
 
+clip_pretrained, _ = clip.load("ViT-L/14@336px", device='cpu', jit=False)
+
 def compute_clip_feature(text):
-    clip_pretrained, _ = clip.load("ViT-L/14@336px", device='cpu', jit=False)
+
     # generate token
     text = clip.tokenize([text])
 
