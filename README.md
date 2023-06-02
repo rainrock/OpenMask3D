@@ -31,7 +31,7 @@ and put it inside the folder openseg.
 
 Definition
    
-   Given Clip feature space $V$ and instance class space $`X`$ , $|X| = 200$(?)
+   Given Clip feature space $V$ and instance space $`X`$ , $|X| = 200$(?)
    
    Input: 
    
@@ -41,16 +41,16 @@ Definition
    <!---     
    - Mask3D heatmap, a mapping for each point to probability space over instance class $X$ , $\sum_{x \in X}Pr(p \in x) = 1$
    -->
-   - [Mask3D] Heatmaps $h_i$ from $P \to [0.5, 1]^{|P|}$, where $0 \leq i < |X|$, $h_i$ is a mapping from each point $p$ to the confidence level of this point belonging to instance class $x \in X$.
+   - [Mask3D] Heatmaps $h_i$ from $P \to [0.5, 1]^{|P|}$, where $1 \leq i \leq |X|$, $h_i$ is a mapping from each point $p$ to the confidence level of this point belonging to instance $x \in X$.
    
    Normalization:
-   - $g_i = softmax(h_i - 0.5) : P \to [0, 1]^{|P|}$, where $i$ stands for the $i$-th instance class in $X$.
+   - $g_i = \frac{h_i - 0.5}{\sum_{i} h_i - 0.5} : P \to [0, 1]^{|P|}$, where $i$ stands for the $i$-th instance in $X$.
    
    Output:
    
-   - for each instance class $x \in X$, compute the aggregated clip feature over all points: $\sum_{p \in P} \phi (p) g_i(p)$
+   - for the $i$-th instance in $X$, compute the normalized aggregated clip feature over all points: $\frac{\sum_{p \in P} \phi (p) g_i(p)}{\sum_{p \in P} {g_i(p)}}$
 
-
+-----------------------------------------------------------------------------------------
 With precomputed mask3D heatmaps and Openscene clip feature, running the following command will produce the visualization mask for 3D point cloud for certain scene:
     
     python3 main.py -clip_feature_path scene_clip_feature.pt -mask3d_path scene/heatmap/ -scene_name scenename
