@@ -4,7 +4,7 @@ import open3d as o3d
 import open3d.visualization.gui as gui
 import open3d.visualization.rendering as rendering
 from fusion import feature_fusion
-import visualization.clip_utils as clip_utils
+import clip_utils as clip_utils
 
 import os
 import sys

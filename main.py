@@ -3,7 +3,7 @@ import numpy as np
 import torch
 from fusion import feature_fusion
 import mask3d
-from visualization.clip_utils import find_mask
+from clip_utils import find_mask
 
 def main(args):
     # Your code logic goes here
