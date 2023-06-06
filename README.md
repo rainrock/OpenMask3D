@@ -13,6 +13,31 @@ Public Dataset:
 2. Replica:
 
 
+
+# Demo
+
+
+We implement a visualization tool that leverages Open3D to visualize point clouds and process input text queries. 
+
+### Download our preprocessed example data from:
+ `https://drive.google.com/drive/folders/1nkoxhIKoVsFArdQ0bP0jlqgulykjVtrN?usp=sharing`
+
+### Dependencises:
+First make sure you have all the dependencies installed:
+```
+torch
+numpy
+clip
+open3d
+```
+### Run the visualizer:
+
+```
+python visualize.py
+```
+
+
+Now if you would like to use customized data, read the following instruction. 
 # Installation 
 For Preprocessing, Feature fusion and Clip text-encoding you only need to get
     torch
@@ -59,34 +84,3 @@ e.g. for scene 0568_00
 
     python3 main.py -clip_feature_path scene0568_00_0.pt -mask3d_path 0568_00_mask_heatmap/heatmap/ -scene_name scene0568_00
 
-
-# Visualization [Open3D]
-
-We implement a visualization tool that leverages Open3D to visualize point clouds and process input text queries. This README provides instructions on how to use our visualizer and outlines the functionalities that are yet to be implemented @Jan @Ke
-
-
-To experience our visualizer, run the following script. 
-
-Choose a `.ply` file from the menu bar after running the visualizer.
-
-    python visualization/visualize.py
-    
-
-Alternatively, specify the path to a point cloud file (e.g., fragment.ply) as an argment.
- 
-    python visualization/visualize.py visualization/fragment.ply
-    
-
-### Functionalities
-
-There are several functionalities that are yet to be implemented. These functions are assigned to specific team members:
-@Ke` 
-
-Implement the function "`find_mask`" in `visualization/clip_utils.py`.
-
-`Input`:  "text"   (e.g, "sofa")
-
-`OutPut`: PointCloud Mask ($|P|$ values from 0 to 1 indicate how relevant the points are to the given text). (e.g.[0.1, 0.3, 0, 0,...1] of size $|P|$)
-
-    find_similar_points(clip_vector: clip_feature, threshold: float) -> similarity mask: This function takes a CLIP vector and returns a mask value from 0 to 1. 
-    large value indicates the point CLIP is close to the text CLIP. 
