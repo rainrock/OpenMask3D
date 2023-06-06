@@ -126,6 +126,7 @@ class AppWindow:
         
         # reload the colors of points so the relavant points have distinctive color
         mask = clip_utils.find_mask(new_text, self.processed_mask3d, self.instance_feature, "")
+        # mask = clip_utils.find_mask_per_point(new_text, self.pc_features)
         self.update_color(mask)
         self.update_scene()
         
@@ -281,7 +282,7 @@ def main():
 
     # per instance clip feature (200, 768)
     feature_fusion(processed_mask3d, pc_features, "0568_00")
-    instance_feature = np.loadtxt('test_data/fused_feature_0568_00.txt') # (200, 768) [-1.1, 1.2]
+    instance_feature = np.loadtxt('0568/fused_feature_0568_00.txt') # (200, 768) [-1.1, 1.2]
     print("compute instance CLIP features, done")
     ###################################################################
     
@@ -291,6 +292,7 @@ def main():
     w.processed_mask3d = processed_mask3d
     w.instance_feature = instance_feature
 
+    # path to the point cloud file
     path = '0568/0568_pc.ply'
     if os.path.exists(path):
         w.load_cloud(path)

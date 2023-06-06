@@ -3,7 +3,7 @@ import os
 import matplotlib.pyplot as plt
 from scipy.special import softmax
 from clip_features.clip_text_encoder import compute_clip_distance, compute_clip_feature
-
+from sklearn.metrics.pairwise import cosine_distances
 
 # by Jan & Ke
 # compute clip feature vector from a text input
@@ -24,6 +24,23 @@ def find_mask(text_input, processed_mask3d, instance_feature, filename):
     
     mask = mask[mask.max(axis = 1)> Threshold]
     mask = np.max(mask, axis=0)
+    return mask
+
+
+# (214318, 768)
+def find_mask_per_point(text_input, pc_features):
+    text_CLIP = compute_textCLIP(text_input)[0]
+
+    text_CLIP = np.reshape(text_CLIP, (1, -1))
+
+    # Compute cosine distances between A and all clip features
+    distances = cosine_distances(text_CLIP, pc_features)
+
+    # The resulting distances will be of size (1, 214318), but we can reshape it to (214318,)
+    distances = np.reshape(distances, (214318,))
+    # normalized_mask = (mask - np.min(mask)) / (np.max(mask) - np.min(mask))
+    mask = 2- distances
+    
     return mask
 
 

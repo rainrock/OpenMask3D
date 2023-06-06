@@ -22,7 +22,7 @@ def feature_fusion(preproessed_mask3d, clip_feature, filename, method = "average
     else:
         instance_feature = None
     
-    np.savetxt(f"test_data/fused_feature_{filename}.txt", instance_feature) 
+    np.savetxt(f"0568/fused_feature_{filename}.txt", instance_feature) 
     print(f"Saved fused instance feature to test_data/fused_feature_{filename}.txt")  
     
 
