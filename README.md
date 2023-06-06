@@ -19,11 +19,17 @@ Public Dataset:
 
 We implement a visualization tool that leverages Open3D to visualize point clouds and process input text queries. 
 
-### Download our preprocessed example data from:
+```
+git clone https://github.com/rainrock/OpenMask3D.git
+cd OpenMask3D
+mkdir 0568
+```
+Download our preprocessed example from:
  `https://drive.google.com/drive/folders/1nkoxhIKoVsFArdQ0bP0jlqgulykjVtrN?usp=sharing`
+to the '0658' folder.
 
-### Dependencises:
-First make sure you have all the dependencies installed:
+
+### Install Dependencises:
 ```
 torch
 numpy
