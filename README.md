@@ -26,15 +26,18 @@ mkdir 0568
 ```
 Download our preprocessed example from:
  `https://drive.google.com/drive/folders/1nkoxhIKoVsFArdQ0bP0jlqgulykjVtrN?usp=sharing`
-to the '0658' folder.
+to the '0568' folder.
 
 
 ### Install Dependencises:
 ```
-torch
-numpy
-clip
-open3d
+   torch
+   tensorflow
+   numpy
+   imageio
+   tqdm
+   clip
+   open3d
 ```
 ### Run the visualizer:
 
